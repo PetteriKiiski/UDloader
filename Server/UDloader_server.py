@@ -1,5 +1,18 @@
 import socketserver, threading, struct, os, pickle, sqlite3
+def connect(filename):
+	create = not os.path.exists(filename):
+	db = sqlite3.connect()
+	if not create:
+		cursor = db.cursor()
+		cursor.execute('''CREATE TABLE encodings(
+			id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+			filename TEXT NOT NULL,
+			encoding TEXT NOT NULL)''')
+	db.commit()
+	return db
 def main():
+	global db
+	db = connect('/home/sepatuu/peter/Network/UDloader/Server/Encodings/encodings.sql')
 	try:
 		server = UDloaderServer(('10.0.0.147', 9653), RequestHandler)
 		server.serve_forever()
@@ -28,6 +41,7 @@ class RequestHandler(socketserver.StreamRequestHandler):
 		self.wfile.write(SizeStruct.pack(len(response)))
 		self.wfile.write(response)
 	def upload(self, filename, txt, encode):
+		global db
 		if filename == 'UDloader_server.py' or filename in self.get_files():
 			return 'cannot create file named \'{}\''.format(filename)
 		try:
@@ -38,11 +52,11 @@ class RequestHandler(socketserver.StreamRequestHandler):
 					fh.write(txt.encode(encoding=encode))
 		except Exception as err:
 			print ('UPLOAD ERROR:', err)
-		try:
-			with open('/home/sepatuu/peter/Network/UDloader/Server/Encodings/encodings.dat', 'wb') as fh:
-				fh.write('{0}={1}'.encode(encoding='UTF-8').format(filename, str(encode)))
-		except Exception as err:
-			print ('UPLOAD ERROR:', err)
+		cursor = db.cursor()
+		cursor.execute('''INSERT INTO encodings
+			(filename, encoding)
+			VALUES (?, ?)''', (filename, str(encode)))
+		db.commit()
 		return ''
 	def get_files(self):
 		rvalue = []
@@ -52,12 +66,22 @@ class RequestHandler(socketserver.StreamRequestHandler):
 			rvalue += [filename]
 		return rvalue
 	def get_text(self, filename):
+		global db
+		cursor = db.cursor()
+		cursor.execute('''SELECT encoding
+			FROM encodings
+			WHERE encoding.filename=?''', (filename))
+		encode = cursor.fetchone()
+		if encode == 'None':
+			encode = None
 		try:
 			with open(filename, 'rb') as fh:
-				text = fh.read().decode(encoding='UTF-8')
+				if encode == None:
+					text = fh.read()
+				else:
+					text = fh.read().decode(encoding=encode)
 		except Exception as err:
 			print ('GET TEXT ERROR:', err)
-		print (text)
 		return text
 Call = {'UPLOAD':lambda self, *args:self.upload(*args), \
 	'GET_FILES':lambda self, *args:self.get_files(*args), \
