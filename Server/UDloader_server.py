@@ -1,8 +1,9 @@
 import socketserver, threading, struct, os, pickle, sqlite3
 def connect(filename):
-	create = not os.path.exists(filename):
-	db = sqlite3.connect()
-	if not create:
+	create = not os.path.exists(filename)
+	db = sqlite3.connect(filename)
+	print (create)
+	if create:
 		cursor = db.cursor()
 		cursor.execute('''CREATE TABLE encodings(
 			id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
@@ -70,7 +71,7 @@ class RequestHandler(socketserver.StreamRequestHandler):
 		cursor = db.cursor()
 		cursor.execute('''SELECT encoding
 			FROM encodings
-			WHERE encoding.filename=?''', (filename))
+			WHERE filename=?''', (filename))
 		encode = cursor.fetchone()
 		if encode == 'None':
 			encode = None

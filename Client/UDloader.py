@@ -29,11 +29,11 @@ def upload():
 	except EnvironmentError:
 		print ('There was no such file')
 		return
-	print (handle_request('UPLOAD', filename, txt))
+	print (handle_request('UPLOAD', filename, txt, encode))
 def download():
 	filenames = handle_request('GET_FILES')
 	print ('these are the available files:')
-	for fn in filenames:
+	for fn in filenames[0]:
 		print (fn)
 	filename = input('which one do you chose: ')
 	if not filename:
@@ -56,9 +56,9 @@ def download():
 def read():
 	filenames = handle_request('GET_FILES')
 	print ('these are the available files:')
-	for fn in filenames:
+	for fn in filenames[0]:
 		print (fn)
-	filename = input('which one do you chose')
+	filename = input('which one do you choose: ')
 	if not filename:
 		return
 	txt = handle_request('GET_TEXT', filename)
