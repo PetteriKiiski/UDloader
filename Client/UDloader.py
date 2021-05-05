@@ -17,9 +17,15 @@ def upload():
 		dir = '.'
 	if dir.startswith('~/'):
 		dir = '/home/sepatuu' + dir[1:]
+	encode = input('If it\'s an image file, you may want to say here \'None\'. Otherwise, most of the times comes UTF-8')
+	if encode == 'None':
+		encode = None
 	try:
 		with open(dir + '/' + filename, 'rb') as fh:
-			txt = fh.read().decode(encoding='UTF-8')
+			if encode == None:
+				txt = fh.read()
+			else:
+				txt = fh.read().decode(encoding='encode')
 	except EnvironmentError:
 		print ('There was no such file')
 		return
@@ -32,14 +38,18 @@ def download():
 	filename = input('which one do you chose: ')
 	if not filename:
 		return
-	txt = handle_request('GET_TEXT', filename)
-	print (txt)
+	txt, encode = handle_request('GET_TEXT', filename)
+	if encode == 'None':
+		encode = None
 	if txt is None:
 		print ('You did not enter a correct filename')
 		return
 	try:
 		with open('/home/sepatuu/Downloads/' + filename, 'wb') as fh:
-			fh.write(txt.encode(encoding='UTF-8'))
+			if encode == None:
+				fh.write(txt)
+			else:
+				fh.write(txt.encode(encoding=encode))
 	except EnvironmentError as err:
 		print ('We have a problem in the downloading process:', err)
 		return

@@ -82,7 +82,7 @@ class RequestHandler(socketserver.StreamRequestHandler):
 					text = fh.read().decode(encoding=encode)
 		except Exception as err:
 			print ('GET TEXT ERROR:', err)
-		return text
+		return [text, encode]
 Call = {'UPLOAD':lambda self, *args:self.upload(*args), \
 	'GET_FILES':lambda self, *args:self.get_files(*args), \
 	'GET_TEXT':lambda self, *args:self.get_text(*args)}
