@@ -25,7 +25,7 @@ def upload():
 			if encode == None:
 				txt = fh.read()
 			else:
-				txt = fh.read().decode(encoding='encode')
+				txt = fh.read().decode(encoding=encode)
 	except EnvironmentError:
 		print ('There was no such file')
 		return

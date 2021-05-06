@@ -5,9 +5,9 @@ def connect(filename):
 	print (create)
 	if create:
 		cursor = db.cursor()
-		cursor.execute("CREATE TABLE encodings( "
-			"id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, "
-			"filename TEXT NOT NULL, "
+		cursor.execute("CREATE TABLE encodings("
+			"id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,"
+			"filename TEXT NOT NULL,"
 			"encoding TEXT NOT NULL)")
 		db.commit()
 	return db
@@ -46,7 +46,7 @@ class RequestHandler(socketserver.StreamRequestHandler):
 		if filename == 'UDloader_server.py' or filename in self.get_files():
 			return 'cannot create file named \'{}\''.format(filename)
 		try:
-			with open(filename, 'wb') as fh:
+			with open('Files/' + filename, 'wb') as fh:
 				if encode == None:
 					fh.write(txt)
 				else:
@@ -54,16 +54,12 @@ class RequestHandler(socketserver.StreamRequestHandler):
 		except Exception as err:
 			print ('UPLOAD ERROR:', err)
 		cursor = db.cursor()
-		cursor.execute("INSERT INTO encodings "
-			"(filename, encoding) "
-			"VALUES (?, ?)", (filename, str(encode)))
+		cursor.execute("INSERT INTO encodings(filename, encoding) VALUES (?, ?)", (filename, str(encode)))
 		db.commit()
 		return ''
 	def get_files(self):
 		rvalue = []
-		for ignore1, ignore2, filename in os.walk('.'):
-			if filename == 'UDloader_server.py':
-				continue
+		for ignore1, ignore2, filename in os.walk('Files'):
 			rvalue += [filename]
 		return rvalue
 	def get_text(self, filename):
@@ -76,7 +72,7 @@ class RequestHandler(socketserver.StreamRequestHandler):
 		if encode == 'None':
 			encode = None
 		try:
-			with open(filename, 'rb') as fh:
+			with open('Files/' + filename, 'rb') as fh:
 				if encode == None:
 					text = fh.read()
 				else:
