@@ -29,7 +29,7 @@ def upload():
 	except EnvironmentError:
 		print ('There was no such file')
 		return
-	print (handle_request('UPLOAD', filename, txt, encode))
+	#print (handle_request('UPLOAD', filename, txt, encode))
 def download():
 	filenames = handle_request('GET_FILES')
 	print ('these are the available files:')
@@ -38,18 +38,13 @@ def download():
 	filename = input('which one do you chose: ')
 	if not filename:
 		return
-	txt, encode = handle_request('GET_TEXT', filename)
-	if encode == 'None':
-		encode = None
+	txt = handle_request('GET_TEXT', filename)
 	if txt is None:
 		print ('You did not enter a correct filename')
 		return
 	try:
 		with open('/home/sepatuu/Downloads/' + filename, 'wb') as fh:
-			if encode == None:
-				fh.write(txt)
-			else:
-				fh.write(txt.encode(encoding=encode))
+			fh.write(txt)
 	except EnvironmentError as err:
 		print ('We have a problem in the downloading process:', err)
 		return
@@ -74,7 +69,7 @@ def exit():
 def handle_request(*info):
 	SizeStruct = struct.Struct('!I')
 	data = pickle.dumps(info, 3)
-	print (pickle.loads(data))
+	#print (pickle.loads(data))
 	try:
 		with SocketManager(Address) as sock:
 			sock.sendall(SizeStruct.pack(len(data)))

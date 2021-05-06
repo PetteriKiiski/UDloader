@@ -67,19 +67,21 @@ class RequestHandler(socketserver.StreamRequestHandler):
 		cursor = db.cursor()
 		cursor.execute("SELECT encoding "
 			"FROM encodings "
-			"WHERE filename=?", (filename))
-		encode = cursor.fetchone()
+			"WHERE filename=?", (filename,))
+		encode = cursor.fetchone()[0]
 		if encode == 'None':
 			encode = None
 		try:
 			with open('Files/' + filename, 'rb') as fh:
+				print (encode)
 				if encode == None:
 					text = fh.read()
 				else:
 					text = fh.read().decode(encoding=encode)
 		except Exception as err:
 			print ('GET TEXT ERROR:', err)
-		return [text, encode]
+			return
+		return text
 Call = {'UPLOAD':lambda self, *args:self.upload(*args), \
 	'GET_FILES':lambda self, *args:self.get_files(*args), \
 	'GET_TEXT':lambda self, *args:self.get_text(*args)}
