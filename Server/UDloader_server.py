@@ -5,11 +5,11 @@ def connect(filename):
 	print (create)
 	if create:
 		cursor = db.cursor()
-		cursor.execute('''CREATE TABLE encodings(
-			id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-			filename TEXT NOT NULL,
-			encoding TEXT NOT NULL)''')
-	db.commit()
+		cursor.execute("CREATE TABLE encodings( "
+			"id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, "
+			"filename TEXT NOT NULL, "
+			"encoding TEXT NOT NULL)")
+		db.commit()
 	return db
 def main():
 	global db
@@ -54,9 +54,9 @@ class RequestHandler(socketserver.StreamRequestHandler):
 		except Exception as err:
 			print ('UPLOAD ERROR:', err)
 		cursor = db.cursor()
-		cursor.execute('''INSERT INTO encodings
-			(filename, encoding)
-			VALUES (?, ?)''', (filename, str(encode)))
+		cursor.execute("INSERT INTO encodings "
+			"(filename, encoding) "
+			"VALUES (?, ?)", (filename, str(encode)))
 		db.commit()
 		return ''
 	def get_files(self):
@@ -69,9 +69,9 @@ class RequestHandler(socketserver.StreamRequestHandler):
 	def get_text(self, filename):
 		global db
 		cursor = db.cursor()
-		cursor.execute('''SELECT encoding
-			FROM encodings
-			WHERE filename=?''', (filename))
+		cursor.execute("SELECT encoding "
+			"FROM encodings "
+			"WHERE filename=?", (filename))
 		encode = cursor.fetchone()
 		if encode == 'None':
 			encode = None
