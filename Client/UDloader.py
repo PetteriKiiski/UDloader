@@ -17,7 +17,7 @@ def upload():
 		dir = '.'
 	if dir.startswith('~/'):
 		dir = '/home/sepatuu' + dir[1:]
-	encode = input('If it\'s an image file, you may want to say here \'None\'. Otherwise, most of the times comes UTF-8')
+	encode = input('If it\'s an image file, you may want to say here \'None\'. Otherwise, most of the times comes UTF-8: ')
 	if encode == 'None':
 		encode = None
 	try:
