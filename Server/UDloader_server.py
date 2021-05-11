@@ -43,6 +43,7 @@ class RequestHandler(socketserver.StreamRequestHandler):
 		self.wfile.write(response)
 	def upload(self, filename, txt, encode):
 		global db
+		print ('uploading')
 		if filename == 'UDloader_server.py' or filename in self.get_files():
 			return 'cannot create file named \'{}\''.format(filename)
 		try:
@@ -58,11 +59,13 @@ class RequestHandler(socketserver.StreamRequestHandler):
 		db.commit()
 		return ''
 	def get_files(self):
+		print ('getting files')
 		rvalue = []
 		for ignore1, ignore2, filename in os.walk('Files'):
 			rvalue += [filename]
 		return rvalue
 	def get_text(self, filename):
+		print ('getting text')
 		global db
 		cursor = db.cursor()
 		cursor.execute("SELECT encoding "
@@ -81,7 +84,7 @@ class RequestHandler(socketserver.StreamRequestHandler):
 		except Exception as err:
 			print ('GET TEXT ERROR:', err)
 			return
-		return text
+		return text, encode
 Call = {'UPLOAD':lambda self, *args:self.upload(*args), \
 	'GET_FILES':lambda self, *args:self.get_files(*args), \
 	'GET_TEXT':lambda self, *args:self.get_text(*args)}
