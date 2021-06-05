@@ -29,22 +29,23 @@ def upload():
 	except EnvironmentError:
 		print ('There was no such file')
 		return
+	handle_request('UPLOAD', filename, txt, encode)
 	#print (handle_request('UPLOAD', filename, txt, encode))
 def download():
 	filenames = handle_request('GET_FILES')
 	print ('these are the available files:')
 	for fn in filenames[0]:
 		print (fn)
-	filename = input('which one do you chose: ')
+	filename = input('which one do you choose: ')
 	if not filename:
 		return
-	txt = handle_request('GET_TEXT', filename)
+	txt, encode = handle_request('GET_TEXT', filename)
 	if txt is None:
 		print ('You did not enter a correct filename')
 		return
 	try:
 		with open('/home/sepatuu/Downloads/' + filename, 'wb') as fh:
-			fh.write(txt)
+			fh.write(txt.encode(encoding=encode))
 	except EnvironmentError as err:
 		print ('We have a problem in the downloading process:', err)
 		return
